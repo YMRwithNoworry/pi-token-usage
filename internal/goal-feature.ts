@@ -238,7 +238,7 @@ export function registerPersistentGoals(pi: ExtensionAPI): void {
   });
 
   pi.on("agent_before_settle", async (event, ctx) => {
-    if (!goal || goal.status !== "active" || event.outcome !== "completed" || !event.context.canContinue || ctx.hasPendingMessages()) return;
+    if (!goal || goal.status !== "active" || event.outcome !== "completed" || ctx.hasPendingMessages()) return;
     if (automaticContinuations >= MAX_AUTO_CONTINUATIONS_PER_REQUEST) {
       continuationLimitReached = true;
       renderStatus(ctx);

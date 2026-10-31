@@ -69,7 +69,7 @@ function createHarness() {
     for (const handler of handlers.get(event) ?? []) await handler({ type: event, ...payload }, ctx);
   };
 
-  return { commands, tools, appended, sent, notices, statuses, branch, ctx, emit };
+  return { commands, tools, appended, sent, notices, statuses, branch, ctx, emit, handlers };
 }
 
 const tests: Array<[string, () => Promise<void> | void]> = [];
@@ -105,6 +105,34 @@ test("/goal completion only suggests reserved commands and budgets", async () =>
     { value: "100000", label: "100000" },
   ]);
   assert.equal(await command.getArgumentCompletions("build a feature"), null);
+});
+
+test("continues a completed turn even when no context is otherwise runnable", async () => {
+  const harness = createHarness();
+  await harness.emit("session_start");
+  await harness.commands.get("goal").handler("finish the requested implementation", harness.ctx);
+  harness.sent.length = 0;
+
+  const settleHandlers = harness.handlers.get("agent_before_settle") ?? [];
+  assert.equal(settleHandlers.length, 1);
+  const result = await settleHandlers[0]({
+    type: "agent_before_settle",
+    outcome: "completed",
+    entries: [],
+    continue: false,
+    context: {
+      contextEntries: [],
+      contextMessages: [],
+      llmMessages: [{ role: "assistant", content: "done" }],
+      pendingMessages: [],
+      canContinue: false,
+    },
+  }, harness.ctx);
+
+  assert.equal(result?.continue, true);
+  assert.equal(result?.entries?.length, 1);
+  assert.equal(result?.entries?.[0]?.type, "custom_message");
+  assert.equal(result?.entries?.[0]?.customType, "pi-persistent-goal-continuation");
 });
 
 test("legacy /goal start syntax remains compatible", async () => {
