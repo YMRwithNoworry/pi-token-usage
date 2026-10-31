@@ -72,7 +72,13 @@
 
 ## 安装
 
-将以下文件保持相对路径放入用户扩展目录 `~/.pi/agent/extensions/`：
+推荐通过 npm 安装（需要 Pi 1.4.0 或更高版本）：
+
+```bash
+pi install npm:@paojiao134/pi-token-usage
+```
+
+安装后重启 Pi，或在运行中的会话执行 `/reload`。如需手动安装，将以下文件保持相对路径放入用户扩展目录 `~/.pi/agent/extensions/`：
 
 ```text
 token-usage.ts

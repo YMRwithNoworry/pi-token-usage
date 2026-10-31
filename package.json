@@ -1,0 +1,40 @@
+{
+  "name": "@paojiao134/pi-token-usage",
+  "version": "1.0.0",
+  "description": "Pi extension for token usage, persistent goals, Chinese working status, and a strict Tab message queue",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YMRwithNoworry/pi-token-usage.git"
+  },
+  "homepage": "https://github.com/YMRwithNoworry/pi-token-usage#readme",
+  "bugs": {
+    "url": "https://github.com/YMRwithNoworry/pi-token-usage/issues"
+  },
+  "keywords": [
+    "pi-package",
+    "pi",
+    "pi-extension",
+    "token-usage",
+    "goal-management",
+    "message-queue"
+  ],
+  "files": [
+    "token-usage.ts",
+    "internal/",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "pi": {
+    "extensions": [
+      "./token-usage.ts"
+    ]
+  }
+}

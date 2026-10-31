@@ -1,9 +1,10 @@
 # Repository Guidelines
 
-A Pi extension bundling real-time token usage, persistent goals, `/init` guidance generation, Chinese working verbs, and a strict Tab message queue. No `package.json`, no build step, no dependencies to install — it runs on Pi's built-in extension API.
+A Pi extension bundling real-time token usage, persistent goals, `/init` guidance generation, Chinese working verbs, and a strict Tab message queue. `package.json` exposes the package to Pi's npm installer; there is no build step or external runtime dependency installation outside Pi's host APIs.
 
 ## Project Structure & Module Organization
 
+- `package.json` — npm metadata and the Pi manifest that loads only `token-usage.ts`.
 - `token-usage.ts` — the only entry point; default export `tokenUsage(pi)` registers every feature.
 - `internal/` — one module per feature, each exporting a single `registerX(pi)` function: `goal-feature.ts`, `init-feature.ts`, `working-verb.ts`, `strict-message-queue.ts`.
 - `tests/` — flat `*.test.ts` files, one per internal module.
@@ -27,7 +28,7 @@ node --experimental-strip-types tests/working-verb.test.ts
 
 Run all: repeat for `strict-message-queue`, `goal-command`, `init-command`. A suite prints `ok - <name>` per test and exits non-zero on failure.
 
-Installation is manual: copy `token-usage.ts` and `internal/*` into `~/.pi/agent/extensions/` preserving relative paths.
+Install from npm with `pi install npm:@paojiao134/pi-token-usage`, or copy `token-usage.ts` and `internal/*` into `~/.pi/agent/extensions/` preserving relative paths.
 
 ## Coding Style & Naming Conventions
 
