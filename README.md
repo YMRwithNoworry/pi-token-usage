@@ -48,8 +48,6 @@
 
 ## Claude Sonnet 5.5 兼容
 
-## Claude Sonnet 5.5 兼容
-
 当当前模型 ID 为 `claude-sonnet-5-5` 且请求 API 为 `anthropic-messages` 时，扩展会修正旧版或自定义模型条目生成的 thinking 参数：启用式 `thinking.type: "enabled"` 转换为 Anthropic 接受的 `adaptive`，关闭式 thinking 字段省略。已经是 `adaptive`、`between_tools` 或未设置 thinking 的请求保持不变；其他模型和 API 不受影响。
 
 ## 持久化 Goal

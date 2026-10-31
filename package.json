@@ -1,6 +1,6 @@
 {
   "name": "codex-style",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Codex-style Pi extension for token usage, persistent goals, Chinese working status, strict Tab message queue, and Claude Sonnet 5.5 compatibility",
   "type": "module",
   "repository": {
