@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-A Pi extension bundling real-time token usage, persistent goals, `/init` guidance generation, Chinese working verbs, and a strict Tab message queue. `package.json` exposes the package to Pi's npm installer; there is no build step or external runtime dependency installation outside Pi's host APIs.
+A Codex-style Pi extension bundling real-time token usage, persistent goals, `/init` guidance generation, Chinese working verbs, and a strict Tab message queue. `package.json` exposes the package to Pi's npm installer; there is no build step or external runtime dependency installation outside Pi's host APIs.
 
 ## Project Structure & Module Organization
 
@@ -28,7 +28,7 @@ node --experimental-strip-types tests/working-verb.test.ts
 
 Run all: repeat for `strict-message-queue`, `goal-command`, `init-command`. A suite prints `ok - <name>` per test and exits non-zero on failure.
 
-Install from npm with `pi install npm:@paojiao134/pi-token-usage`, or copy `token-usage.ts` and `internal/*` into `~/.pi/agent/extensions/` preserving relative paths.
+Install from npm with `pi install npm:codex-style`, or copy `token-usage.ts` and `internal/*` into `~/.pi/agent/extensions/` preserving relative paths.
 
 ## Coding Style & Naming Conventions
 

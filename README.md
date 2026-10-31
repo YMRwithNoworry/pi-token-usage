@@ -1,6 +1,6 @@
-# Pi Token Usage + Persistent Goals
+# Codex Style
 
-这个 Pi 扩展包含实时 token 用量、`/init` 项目指南生成、持久化 Goal、中文工作状态和严格 Tab 消息队列。只加载 `token-usage.ts`，它会注册其余内部功能。
+这个 Pi 扩展提供实时 token 用量、`/init` 项目指南生成、持久化 Goal、中文工作状态和严格 Tab 消息队列。只加载 `token-usage.ts`，它会注册其余内部功能。
 
 ## `/init` 项目指南
 
@@ -75,7 +75,7 @@
 推荐通过 npm 安装（需要 Pi 1.4.0 或更高版本）：
 
 ```bash
-pi install npm:@paojiao134/pi-token-usage
+pi install npm:codex-style
 ```
 
 安装后重启 Pi，或在运行中的会话执行 `/reload`。如需手动安装，将以下文件保持相对路径放入用户扩展目录 `~/.pi/agent/extensions/`：

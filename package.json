@@ -1,7 +1,7 @@
 {
-  "name": "@paojiao134/pi-token-usage",
+  "name": "codex-style",
   "version": "1.0.0",
-  "description": "Pi extension for token usage, persistent goals, Chinese working status, and a strict Tab message queue",
+  "description": "Codex-style Pi extension for token usage, persistent goals, Chinese working status, and a strict Tab message queue",
   "type": "module",
   "repository": {
     "type": "git",
@@ -15,6 +15,7 @@
     "pi-package",
     "pi",
     "pi-extension",
+    "codex-style",
     "token-usage",
     "goal-management",
     "message-queue"
