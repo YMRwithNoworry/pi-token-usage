@@ -62,7 +62,7 @@ class QueueWidget implements Component {
       lines.push(truncateToWidth(label + " ".repeat(pad) + buttons, width));
     }
 
-    lines.push(truncateToWidth(theme.fg("dim", "Tab 入队 · Esc 停止后仍按顺序发送"), width));
+    lines.push(truncateToWidth(theme.fg("dim", "Tab 严格入队 · /命令的 Tab 仅用于补全"), width));
     return lines;
   }
 
@@ -88,7 +88,7 @@ export function registerStrictMessageQueue(pi: ExtensionAPI): void {
   let queue: QueuedMessage[] = [];
   let nextId = 1;
   let activeContext: ExtensionContext | undefined;
-  let sending = false;
+  let queuedRunActive = false;
   let unsubscribeInput: (() => void) | undefined;
 
   const renderQueue = (ctx: ExtensionContext | undefined): void => {
@@ -116,10 +116,10 @@ export function registerStrictMessageQueue(pi: ExtensionAPI): void {
 
   const sendNext = (): void => {
     const ctx = activeContext;
-    if (sending || !ctx || !ctx.isIdle() || queue.length === 0) return;
+    if (queuedRunActive || !ctx || !ctx.isIdle() || queue.length === 0) return;
     const item = queue.shift();
     if (!item) return;
-    sending = true;
+    queuedRunActive = true;
     renderQueue(ctx);
     pi.sendUserMessage(
       item.images && item.images.length > 0
@@ -184,7 +184,7 @@ export function registerStrictMessageQueue(pi: ExtensionAPI): void {
 
   pi.on("session_start", async (_event, ctx) => {
     activeContext = ctx;
-    sending = false;
+    queuedRunActive = false;
     queue = [];
     nextId = 1;
     unsubscribeInput?.();
@@ -208,14 +208,13 @@ export function registerStrictMessageQueue(pi: ExtensionAPI): void {
 
   pi.on("agent_start", async (_event, ctx) => {
     activeContext = ctx;
-    sending = false;
     renderQueue(ctx);
   });
 
   // Fires only once a run has fully settled: no retry, compaction, or continuation pending.
   pi.on("agent_settled", async (_event, ctx) => {
     activeContext = ctx;
-    sending = false;
+    queuedRunActive = false;
     renderQueue(ctx);
     sendNext();
   });
@@ -224,7 +223,7 @@ export function registerStrictMessageQueue(pi: ExtensionAPI): void {
     unsubscribeInput?.();
     unsubscribeInput = undefined;
     activeContext = undefined;
-    sending = false;
+    queuedRunActive = false;
     if (ctx.mode === "tui") ctx.ui.setWidget(QUEUE_WIDGET_KEY, undefined);
   });
 }

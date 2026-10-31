@@ -161,10 +161,17 @@ test("Tab on a slash command keeps Pi autocomplete behavior", async () => {
   const harness = createHarness();
   await harness.emit("session_start");
   await harness.busy();
-  harness.setEditorText("/goal status");
+  harness.setEditorText("  /goal st");
   assert.equal(harness.pressTab(), undefined);
-  assert.equal(harness.getEditorText(), "/goal status");
+  assert.equal(harness.getEditorText(), "  /goal st");
   assert.equal(harness.sent.length, 0);
+});
+
+test("Tab still sends ordinary text that mentions a slash command", async () => {
+  const harness = createHarness();
+  await harness.emit("session_start");
+  harness.enqueue("请执行 /goal status");
+  assert.deepEqual(harness.sent, ["请执行 /goal status"]);
 });
 
 test("Tab on an empty editor does nothing", async () => {
@@ -181,6 +188,9 @@ test("queued messages send strictly one per settled run, in order", async () => 
 
   for (const text of ["A", "B", "C"]) harness.enqueue(text);
   assert.deepEqual(harness.sent, []);
+
+  await harness.emit("agent_end");
+  assert.deepEqual(harness.sent, [], "agent_end is not the strict queue release signal");
 
   await harness.settled();
   assert.deepEqual(harness.sent, ["A"]);
