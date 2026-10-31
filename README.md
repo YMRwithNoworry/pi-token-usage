@@ -1,6 +1,10 @@
 # Pi Token Usage + Persistent Goals
 
-这个 Pi 扩展包含实时 token 用量、持久化 Goal、中文工作状态和严格 Tab 消息队列。只加载 `token-usage.ts`，它会注册其余内部功能。
+这个 Pi 扩展包含实时 token 用量、`/init` 项目指南生成、持久化 Goal、中文工作状态和严格 Tab 消息队列。只加载 `token-usage.ts`，它会注册其余内部功能。
+
+## `/init` 项目指南
+
+运行 `/init` 会让 agent 检查当前项目并创建 200–400 词的 `AGENTS.md`，内容包括项目结构、开发与测试命令、代码风格和提交规范。提示明确要求先检查当前工作目录；如果 `AGENTS.md` 已存在，不得覆盖或修改。任务繁忙时，初始化请求会排在当前任务之后。
 
 ## 实时 Token 用量
 
@@ -73,6 +77,7 @@
 ```text
 token-usage.ts
 internal/goal-feature.ts
+internal/init-feature.ts
 internal/working-verb.ts
 internal/strict-message-queue.ts
 ```
@@ -91,5 +96,6 @@ pi --extension ./token-usage.ts
 node --experimental-strip-types tests/working-verb.test.ts
 node --experimental-strip-types tests/strict-message-queue.test.ts
 node --experimental-strip-types tests/goal-command.test.ts
+node --experimental-strip-types tests/init-command.test.ts
 ```
 
