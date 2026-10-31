@@ -46,9 +46,9 @@
 /queue clear
 ```
 
-## Claude Sonnet 5.5 兼容
+## Claude Sonnet 5.5 和 BLCC Opus 5.5 兼容
 
-当当前模型 ID 为 `claude-sonnet-5-5` 且请求 API 为 `anthropic-messages` 时，扩展会修正旧版或自定义模型条目生成的 thinking 参数：启用式 `thinking.type: "enabled"` 转换为 Anthropic 接受的 `adaptive`，关闭式 thinking 字段省略。已经是 `adaptive`、`between_tools` 或未设置 thinking 的请求保持不变；其他模型和 API 不受影响。
+对于 `api` 为 `anthropic-messages` 的 `claude-sonnet-5-5`，扩展会修正旧版或自定义模型条目生成的 thinking 参数。BLCC 的 `claude-opus-5-5` 也会修正，但仅限 `provider` 为 `blcc` 的模型条目。启用式 `thinking.type: "enabled"` 会转换为 Anthropic 接受的 `adaptive`，关闭式 thinking 字段会省略。已经是 `adaptive`、`between_tools` 或未设置 thinking 的请求保持不变；其他模型、provider 和 API 不受影响。
 
 ## 持久化 Goal
 
@@ -82,7 +82,9 @@
 pi install npm:codex-style
 ```
 
-安装后重启 Pi，或在运行中的会话执行 `/reload`。如需手动安装，将以下文件保持相对路径放入用户扩展目录 `~/.pi/agent/extensions/`：
+安装后重启 Pi，或在运行中的会话执行 `/reload`。npm 安装和手动复制是两种互斥方式；使用 npm 包时，请删除 `~/.pi/agent/extensions/token-usage.ts` 及其对应的 `internal/` 副本，否则同一组工具会被注册两次。
+
+如需手动安装，请将以下文件保持相对路径放入用户扩展目录 `~/.pi/agent/extensions/`：
 
 ```text
 token-usage.ts

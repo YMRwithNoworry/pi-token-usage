@@ -1,5 +1,5 @@
 /**
- * Runtime checks for the Claude Sonnet 5.5 Anthropic payload compatibility fix.
+ * Runtime checks for Claude 5.5 Anthropic payload compatibility.
  *
  * Run with: node --experimental-strip-types tests/sonnet-compat.test.ts
  */
@@ -19,6 +19,12 @@ const sonnetModel = {
   id: "claude-sonnet-5-5",
   api: "anthropic-messages",
   provider: "third-party",
+};
+
+const blccOpusModel = {
+  id: "claude-opus-5-5",
+  api: "anthropic-messages",
+  provider: "blcc",
 };
 
 function createHarness(model: any = sonnetModel, includeEarlierHandler = false) {
@@ -69,6 +75,20 @@ test("converts legacy enabled thinking to adaptive thinking", async () => {
   assert.equal((payload.thinking as any).type, "enabled");
 });
 
+test("converts legacy enabled thinking for BLCC Opus 5.5", async () => {
+  const payload = {
+    model: "claude-opus-5-5",
+    thinking: {
+      type: "enabled",
+      budget_tokens: 4096,
+    },
+  };
+  const result = normalizeSonnet55Payload(payload, blccOpusModel) as any;
+
+  assert.deepEqual(result.thinking, { type: "adaptive" });
+  assert.equal((payload.thinking as any).type, "enabled");
+});
+
 test("preserves block binding while converting enabled thinking", async () => {
   const payload = {
     thinking: {
@@ -82,6 +102,15 @@ test("preserves block binding while converting enabled thinking", async () => {
     type: "adaptive",
     block_binding: { prefix_mismatch_behavior: "drop_block" },
   });
+});
+
+test("limits Opus 5.5 compatibility to the BLCC provider", async () => {
+  const payload = { thinking: { type: "enabled", budget_tokens: 2048 } };
+  const cases = [
+    { id: "claude-opus-5-5", api: "anthropic-messages", provider: "other-provider" },
+    { id: "claude-opus-5-5", api: "openai-completions", provider: "blcc" },
+  ];
+  for (const model of cases) assert.strictEqual(normalizeSonnet55Payload(payload, model), payload);
 });
 
 test("omits disabled thinking for Sonnet 5.5", async () => {
@@ -116,6 +145,8 @@ test("changes a third-party Anthropic Messages Sonnet entry", async () => {
 test("does not change other models or APIs", async () => {
   const payload = { thinking: { type: "enabled", budget_tokens: 2048 } };
   const cases = [
+    { id: "claude-opus-5-5", api: "anthropic-messages", provider: "other-provider" },
+    { id: "claude-opus-5-5", api: "openai-completions", provider: "blcc" },
     { id: "claude-sonnet-5-4", api: "anthropic-messages" },
     { id: "claude-sonnet-5-5", api: "openai-completions" },
     { id: "claude-sonnet-5-5", api: "bedrock-converse-stream" },

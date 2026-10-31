@@ -1,6 +1,8 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const SONNET_MODEL_ID = "claude-sonnet-5-5";
+const OPUS_MODEL_ID = "claude-opus-5-5";
+const BLCC_PROVIDER = "blcc";
 const ANTHROPIC_MESSAGES_API = "anthropic-messages";
 
 type JsonObject = Record<string, unknown>;
@@ -9,6 +11,7 @@ type ThinkingDisplay = "summarized" | "omitted" | "updates" | null;
 type ModelLike = {
   api?: unknown;
   id?: unknown;
+  provider?: unknown;
 };
 
 function isObject(value: unknown): value is JsonObject {
@@ -19,8 +22,10 @@ function isThinkingDisplay(value: unknown): value is ThinkingDisplay {
   return value === "summarized" || value === "omitted" || value === "updates" || value === null;
 }
 
-function isSonnet55Model(model: ModelLike | undefined): boolean {
-  return model?.api === ANTHROPIC_MESSAGES_API && model.id === SONNET_MODEL_ID;
+function isCompatibilityTarget(model: ModelLike | undefined): boolean {
+  if (model?.api !== ANTHROPIC_MESSAGES_API) return false;
+  if (model.id === SONNET_MODEL_ID) return true;
+  return model.id === OPUS_MODEL_ID && model.provider === BLCC_PROVIDER;
 }
 
 function adaptiveConfigFromEnabled(thinking: JsonObject): JsonObject {
@@ -37,11 +42,12 @@ function adaptiveConfigFromEnabled(thinking: JsonObject): JsonObject {
 }
 
 /**
- * Convert the legacy thinking payload emitted by older/custom Pi model entries.
- * Sonnet 5.5 accepts adaptive thinking, between_tools, or no thinking field.
+ * Convert legacy thinking payloads for Claude 5.5 Anthropic Messages models.
+ * Sonnet 5.5 is matched by model ID; Opus 5.5 is limited to the BLCC provider.
+ * Both models accept adaptive thinking, between_tools, or no thinking field.
  */
 export function normalizeSonnet55Payload(payload: unknown, model: ModelLike | undefined): unknown {
-  if (!isSonnet55Model(model) || !isObject(payload)) return payload;
+  if (!isCompatibilityTarget(model) || !isObject(payload)) return payload;
 
   const thinking = payload.thinking;
   if (!isObject(thinking)) return payload;
@@ -62,7 +68,7 @@ export function normalizeSonnet55Payload(payload: unknown, model: ModelLike | un
   return payload;
 }
 
-/** Apply the Sonnet 5.5 fix to Anthropic Messages requests only. */
+/** Apply the Claude 5.5 fix to targeted Anthropic Messages requests only. */
 export function registerSonnetCompatibility(pi: ExtensionAPI): void {
   pi.on("before_provider_request", async (event, ctx) => normalizeSonnet55Payload(event.payload, ctx.model));
 }
