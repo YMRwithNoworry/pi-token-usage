@@ -110,7 +110,7 @@ export function registerStrictMessageQueue(pi: ExtensionAPI): void {
             tui.requestRender();
           },
         ),
-      { placement: "belowEditor" },
+      { placement: "aboveEditor" },
     );
   };
 

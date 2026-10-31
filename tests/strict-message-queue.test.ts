@@ -25,6 +25,7 @@ function createHarness() {
   let inputListener: ((data: string) => any) | undefined;
   let editorText = "";
   let widget: any;
+  let widgetOptions: any;
 
   const theme = { fg: (_color: string, text: string) => text };
 
@@ -35,8 +36,11 @@ function createHarness() {
     ui: {
       theme,
       setStatus: () => {},
-      setWidget: (key: string, content: any) => {
-        if (key === "strict-message-queue") widget = content;
+      setWidget: (key: string, content: any, options?: any) => {
+        if (key === "strict-message-queue") {
+          widget = content;
+          widgetOptions = options;
+        }
       },
       getEditorText: () => editorText,
       setEditorText: (text: string) => {
@@ -100,6 +104,7 @@ function createHarness() {
       editorText = text;
     },
     getWidget: () => widget,
+    getWidgetOptions: () => widgetOptions,
     enqueue(text: string) {
       editorText = text;
       inputListener?.("\t");
@@ -221,6 +226,7 @@ test("queue widget lists numbered entries with edit and delete buttons", async (
   harness.enqueue("第二条消息");
 
   const lines = renderWidget(harness);
+  assert.deepEqual(harness.getWidgetOptions(), { placement: "aboveEditor" });
   assert.ok(lines[0]?.includes("严格队列"), `header missing: ${lines[0]}`);
   assert.ok(lines[1]?.includes("1. 第一条消息"), `row1: ${lines[1]}`);
   assert.ok(lines[2]?.includes("2. 第二条消息"), `row2: ${lines[2]}`);
