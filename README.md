@@ -1,6 +1,12 @@
 # Codex Style
 
-这个 Pi 扩展提供实时 token 用量、`/init` 项目指南生成、持久化 Goal、中文工作状态和严格 Tab 消息队列。只加载 `token-usage.ts`，它会注册其余内部功能。
+这个 Pi 扩展提供实时 token 用量、任务 Todo 清单、`/init` 项目指南生成、持久化 Goal、中文工作状态和严格 Tab 消息队列。只加载 `token-usage.ts`，它会注册其余内部功能。
+
+## Codex Todo 清单
+
+对于复杂的多步骤任务，agent 会使用 `update_plan` 维护有序步骤，状态为 `pending`、`in_progress` 或 `completed`，并将当前清单注入后续回合的上下文。每次更新提交完整清单，同一时刻最多一个进行中的步骤。清单按会话分支持久化，TUI 状态栏显示进度。
+
+用户可以运行 `/plan` 或 `/todos` 查看清单，运行 `/plan clear` 清除。此清单用于当前任务的执行步骤，与跨回合持续目标 `/goal` 分开。
 
 ## `/init` 项目指南
 
@@ -90,6 +96,7 @@ pi install npm:codex-style
 token-usage.ts
 internal/goal-feature.ts
 internal/init-feature.ts
+internal/todo-feature.ts
 internal/working-verb.ts
 internal/strict-message-queue.ts
 internal/sonnet-compat-feature.ts
@@ -110,6 +117,7 @@ node --experimental-strip-types tests/working-verb.test.ts
 node --experimental-strip-types tests/strict-message-queue.test.ts
 node --experimental-strip-types tests/goal-command.test.ts
 node --experimental-strip-types tests/init-command.test.ts
+node --experimental-strip-types tests/todo-feature.test.ts
 node --experimental-strip-types tests/sonnet-compat.test.ts
 ```
 

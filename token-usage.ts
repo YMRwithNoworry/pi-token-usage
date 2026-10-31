@@ -3,6 +3,7 @@ import { registerStrictMessageQueue } from "./internal/strict-message-queue.ts";
 import { registerPersistentGoals } from "./internal/goal-feature.ts";
 import { registerInitCommand } from "./internal/init-feature.ts";
 import { registerSonnetCompatibility } from "./internal/sonnet-compat-feature.ts";
+import { registerCodexTodo } from "./internal/todo-feature.ts";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import type { AssistantMessage, Usage } from "@earendil-works/pi-ai";
 
@@ -79,6 +80,7 @@ export default function tokenUsage(pi: ExtensionAPI) {
   registerInitCommand(pi);
   registerWorkingVerbs(pi);
   registerSonnetCompatibility(pi);
+  registerCodexTodo(pi);
   registerStrictMessageQueue(pi);
   let total = emptyTotals();
   let turn = emptyTotals();

@@ -1,12 +1,12 @@
 # Repository Guidelines
 
-A Codex-style Pi extension bundling real-time token usage, persistent goals, `/init` guidance generation, Chinese working verbs, strict Tab message queue, and Claude 5.5 Anthropic payload compatibility. `package.json` exposes the package to Pi's npm installer; there is no build step or external runtime dependency installation outside Pi's host APIs.
+A Codex-style Pi extension bundling real-time token usage, persistent goals, task plans, `/init` guidance generation, Chinese working verbs, strict Tab message queue, and Claude 5.5 Anthropic payload compatibility. `package.json` exposes the package to Pi's npm installer; there is no build step or external runtime dependency installation outside Pi's host APIs.
 
 ## Project Structure & Module Organization
 
 - `package.json` — npm metadata and the Pi manifest that loads only `token-usage.ts`.
 - `token-usage.ts` — the only entry point; default export `tokenUsage(pi)` registers every feature.
-- `internal/` — one module per feature, each exporting a single `registerX(pi)` function: `goal-feature.ts`, `init-feature.ts`, `working-verb.ts`, `strict-message-queue.ts`, `sonnet-compat-feature.ts`.
+- `internal/` — one module per feature, each exporting a single `registerX(pi)` function: `goal-feature.ts`, `init-feature.ts`, `todo-feature.ts`, `working-verb.ts`, `strict-message-queue.ts`, `sonnet-compat-feature.ts`.
 - `tests/` — flat `*.test.ts` files, one per internal module.
 - `README.md` — user-facing behavior and installation docs.
 
@@ -26,7 +26,7 @@ Run a single test file (each is self-contained):
 node --experimental-strip-types tests/working-verb.test.ts
 ```
 
-Run all: repeat for `strict-message-queue`, `goal-command`, `init-command`, `working-verb`, and `sonnet-compat`. A suite prints `ok - <name>` per test and exits non-zero on failure.
+Run all: repeat for `strict-message-queue`, `goal-command`, `init-command`, `todo-feature`, `working-verb`, and `sonnet-compat`. A suite prints `ok - <name>` per test and exits non-zero on failure.
 
 Install from npm with `pi install npm:codex-style`, or copy `token-usage.ts` and `internal/*` into `~/.pi/agent/extensions/` preserving relative paths. These are mutually exclusive installation methods; do not load the npm package and manual copy at the same time.
 
