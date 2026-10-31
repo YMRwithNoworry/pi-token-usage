@@ -46,6 +46,12 @@
 /queue clear
 ```
 
+## Claude Sonnet 5.5 兼容
+
+## Claude Sonnet 5.5 兼容
+
+当当前模型 ID 为 `claude-sonnet-5-5` 且请求 API 为 `anthropic-messages` 时，扩展会修正旧版或自定义模型条目生成的 thinking 参数：启用式 `thinking.type: "enabled"` 转换为 Anthropic 接受的 `adaptive`，关闭式 thinking 字段省略。已经是 `adaptive`、`between_tools` 或未设置 thinking 的请求保持不变；其他模型和 API 不受影响。
+
 ## 持久化 Goal
 
 直接使用 `/goal <objective>` 创建并立即开始目标；预算可以放在目标文本中：
@@ -86,6 +92,7 @@ internal/goal-feature.ts
 internal/init-feature.ts
 internal/working-verb.ts
 internal/strict-message-queue.ts
+internal/sonnet-compat-feature.ts
 ```
 
 也可以在项目目录中显式加载：
@@ -103,5 +110,6 @@ node --experimental-strip-types tests/working-verb.test.ts
 node --experimental-strip-types tests/strict-message-queue.test.ts
 node --experimental-strip-types tests/goal-command.test.ts
 node --experimental-strip-types tests/init-command.test.ts
+node --experimental-strip-types tests/sonnet-compat.test.ts
 ```
 
