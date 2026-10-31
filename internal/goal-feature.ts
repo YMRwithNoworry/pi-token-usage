@@ -333,7 +333,28 @@ export function registerPersistentGoals(pi: ExtensionAPI): void {
   });
 
   pi.registerCommand("goal", {
-    description: "Manage a persistent goal: start, status, pause, resume, complete, clear, or set a token budget",
+    description: "Manage a persistent goal: set an objective directly or use status, pause, resume, complete, clear, or budget",
+    getArgumentCompletions: (argumentPrefix) => {
+      const prefix = argumentPrefix.trimStart();
+      const spaceAt = prefix.search(/\s/u);
+      if (spaceAt < 0) {
+        const commands = ["status", "pause", "resume", "complete", "clear", "help", "budget", "start"];
+        const matches = commands
+          .filter((command) => command.startsWith(prefix))
+          .map((command) => ({ value: command, label: command }));
+        // With no command prefix, prioritize subcommands but preserve free-form goal text.
+        return matches.length > 0 ? matches : null;
+      }
+      const command = prefix.slice(0, spaceAt);
+      const remainder = prefix.slice(spaceAt + 1).trim();
+      if (command === "budget") {
+        return ["none", "10000", "50000", "100000"]
+          .filter((value) => value.startsWith(remainder))
+          .map((value) => ({ value, label: value }));
+      }
+      if (command === "start" || command === "set") return null;
+      return null;
+    },
     handler: async (args, ctx) => {
       const input = args.trim();
       if (!input || input === "status" || input === "show") {
@@ -341,15 +362,35 @@ export function registerPersistentGoals(pi: ExtensionAPI): void {
         return;
       }
       if (input === "help") {
-        ctx.ui.notify("/goal start [--budget N] <objective> | status | pause | resume | complete | clear | budget <N|none>", "info");
+        ctx.ui.notify("/goal <objective> | status | pause | resume | complete | clear | budget <N|none>", "info");
         return;
       }
 
-      const [verb, ...tail] = input.split(/\s+/);
+      const [verb, ...tail] = input.split(/\s+/u);
       const value = tail.join(" ").trim();
       if (verb === "start" || verb === "set") {
         try {
           const parsed = parseStartArgs(value);
+          const created = start(parsed.objective, parsed.tokenBudget);
+          renderStatus(ctx);
+          await pi.sendMessage({
+            customType: `${ENTRY_TYPE}-start`,
+            content: "Start working on the active persistent goal now. Inspect the current project state, preserve the full objective, and verify before completion.",
+            display: false,
+            details: { goalId: created.id },
+          }, { triggerTurn: true });
+          ctx.ui.notify(`Goal started: ${created.objective}`, "info");
+        } catch (error) {
+          ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
+        }
+        return;
+      }
+
+      // Any non-reserved bare command is shorthand for creating and starting a goal.
+      const reserved = new Set(["clear", "pause", "resume", "complete", "budget"]);
+      if (!reserved.has(verb)) {
+        try {
+          const parsed = parseStartArgs(input);
           const created = start(parsed.objective, parsed.tokenBudget);
           renderStatus(ctx);
           await pi.sendMessage({
@@ -374,7 +415,7 @@ export function registerPersistentGoals(pi: ExtensionAPI): void {
         return;
       }
       if (!goal) {
-        ctx.ui.notify("No goal exists. Start one with /goal start <objective>.", "warning");
+        ctx.ui.notify("No goal exists. Set one with /goal <objective>.", "warning");
         return;
       }
 
@@ -414,7 +455,7 @@ export function registerPersistentGoals(pi: ExtensionAPI): void {
         }
         save(updated);
       } else {
-        ctx.ui.notify("Unknown goal command. Use /goal help.", "warning");
+        ctx.ui.notify("Unknown goal command. Use /goal <objective> or /goal help.", "warning");
         return;
       }
 

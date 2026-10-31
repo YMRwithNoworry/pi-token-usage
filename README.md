@@ -1,6 +1,6 @@
 # Pi Token Usage + Persistent Goals
 
-这个 Pi 扩展包含两个功能：
+这个 Pi 扩展包含实时 token 用量、持久化 Goal、中文工作状态和严格 Tab 消息队列。只加载 `token-usage.ts`，它会注册其余内部功能。
 
 ## 实时 Token 用量
 
@@ -14,11 +14,46 @@
 
 不同 provider 对流式中间 usage 的支持不同。中间用量不可用时会以 `~` 标出估算值；最终累计值使用回合结束后 provider 返回的 usage。
 
-## 持久化 Goal
+## 中文工作状态
 
-新增持久化 Goal 功能，内部实现参考 Codex 的目标模型：每个 Pi 会话分支保存一个目标，目标会出现在状态栏和模型上下文中；目标未完成时可自动续做。
+模型工作或思考时，扩展会隐藏 Pi 默认的 `Working` 状态，随机显示并轮换 `D:\Downloads\claude-code-zh-cn-main\verbs\zh-CN.json` 中的 `verbs`。默认每 1.6 秒轮换一次，并避免连续显示同一项。
+
+可以用 `PI_WORKING_VERBS_FILE` 指定其他 JSON 文件。文件格式为：
+
+```json
+{
+  "mode": "replace",
+  "verbs": ["架构中", "推敲中", "生成中"]
+}
+```
+
+文件读取失败或列表为空时使用内置中文状态作为 fallback。
+
+## 严格 Tab 消息队列
+
+普通消息在编辑器中按 Tab 会进入严格队列；当前模型回合完全结束后才发送下一条，队列消息不会并发触发多个回合。空输入和以 `/` 开头的命令保留 Pi 原有行为，因此命令仍可使用 Pi 的 Tab 补全。
+
+队列显示在编辑器下方，支持鼠标 `[编辑]`、`[删除]`，也可以使用：
 
 ```text
+/queue
+/queue edit
+/queue delete
+/queue clear
+```
+
+## 持久化 Goal
+
+直接使用 `/goal <objective>` 创建并立即开始目标；预算可以放在目标文本中：
+
+```text
+/goal 完成插件功能并运行测试 --budget 50000
+```
+
+命令补全会提供保留子命令和预算值；自由格式目标不会被补全吞掉。完整命令如下：
+
+```text
+/goal <objective> [--budget N]
 /goal start [--budget N] <objective>
 /goal status
 /goal pause
@@ -33,11 +68,28 @@
 
 ## 安装
 
-将 `token-usage.ts`（以及它引用的 `internal/goal-feature.ts`）放入用户扩展目录 `~/.pi/agent/extensions/`；也可以用命令行显式加载：
+将以下文件保持相对路径放入用户扩展目录 `~/.pi/agent/extensions/`：
+
+```text
+token-usage.ts
+internal/goal-feature.ts
+internal/working-verb.ts
+internal/strict-message-queue.ts
+```
+
+也可以在项目目录中显式加载：
 
 ```bash
 pi --extension ./token-usage.ts
 ```
 
-`token-usage.ts` 使用 Pi 自带的扩展接口；Goal 功能使用 Pi 自带的 `@earendil-works/pi-ai` 工具 schema 和 `@earendil-works/pi-coding-agent` 扩展接口，不需要额外安装依赖。
+`token-usage.ts` 使用 Pi 自带的扩展接口；不需要额外安装依赖。
+
+## 测试
+
+```bash
+node --experimental-strip-types tests/working-verb.test.ts
+node --experimental-strip-types tests/strict-message-queue.test.ts
+node --experimental-strip-types tests/goal-command.test.ts
+```
 

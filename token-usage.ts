@@ -1,3 +1,5 @@
+import { registerWorkingVerbs } from "./internal/working-verb.ts";
+import { registerStrictMessageQueue } from "./internal/strict-message-queue.ts";
 import { registerPersistentGoals } from "./internal/goal-feature.ts";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import type { AssistantMessage, Usage } from "@earendil-works/pi-ai";
@@ -72,6 +74,8 @@ function usageText(
 
 export default function tokenUsage(pi: ExtensionAPI) {
   registerPersistentGoals(pi);
+  registerWorkingVerbs(pi);
+  registerStrictMessageQueue(pi);
   let total = emptyTotals();
   let turn = emptyTotals();
   let streaming = false;
