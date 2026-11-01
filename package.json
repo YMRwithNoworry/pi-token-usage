@@ -1,7 +1,7 @@
 {
   "name": "codex-style",
-  "version": "1.0.5",
-  "description": "Codex-style Pi extension for token usage, persistent goals, task plans, Chinese working status, strict Tab message queue, and Claude 5.5 Anthropic compatibility",
+  "version": "1.0.6",
+  "description": "Codex-style Pi extension for token usage, persistent goals, task plans, Chinese working status, strict Tab queue, Enter-submitted background tasks, and Claude 5.5 compatibility",
   "type": "module",
   "repository": {
     "type": "git",

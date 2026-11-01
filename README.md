@@ -1,6 +1,6 @@
 # Codex Style
 
-这个 Pi 扩展提供实时 token 用量、任务 Todo 清单、`/init` 项目指南生成、持久化 Goal、中文工作状态和严格 Tab 消息队列。只加载 `token-usage.ts`，它会注册其余内部功能。
+这个 Pi 扩展提供实时 token 用量、任务 Todo 清单、`/init` 项目指南生成、持久化 Goal、中文工作状态、严格 Tab 消息队列和 Enter 后台任务。只加载 `token-usage.ts`，它会注册其余内部功能。
 
 ## Codex Todo 清单
 
@@ -38,6 +38,10 @@
 ```
 
 文件读取失败或列表为空时使用内置中文状态作为 fallback。
+
+## 后台任务
+
+模型处理任务期间，在编辑器输入消息并按 Enter，会将普通消息排到当前任务完成之后处理，不会打断当前回合。包含图片的消息也会保留；连续提交的后台任务按提交顺序处理。斜杠命令仍按 Pi 原有规则处理。
 
 ## 严格 Tab 消息队列
 
@@ -98,6 +102,7 @@ internal/goal-feature.ts
 internal/init-feature.ts
 internal/todo-feature.ts
 internal/working-verb.ts
+internal/background-task-queue.ts
 internal/strict-message-queue.ts
 internal/sonnet-compat-feature.ts
 ```
@@ -114,6 +119,8 @@ pi --extension ./token-usage.ts
 
 ```bash
 node --experimental-strip-types tests/working-verb.test.ts
+node --experimental-strip-types tests/background-task-queue.test.ts
+node --experimental-strip-types tests/entrypoint-registration.test.ts
 node --experimental-strip-types tests/strict-message-queue.test.ts
 node --experimental-strip-types tests/goal-command.test.ts
 node --experimental-strip-types tests/init-command.test.ts

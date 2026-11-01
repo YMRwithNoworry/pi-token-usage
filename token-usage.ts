@@ -1,5 +1,6 @@
 import { registerWorkingVerbs } from "./internal/working-verb.ts";
 import { registerStrictMessageQueue } from "./internal/strict-message-queue.ts";
+import { registerBackgroundTaskQueue } from "./internal/background-task-queue.ts";
 import { registerPersistentGoals } from "./internal/goal-feature.ts";
 import { registerInitCommand } from "./internal/init-feature.ts";
 import { registerSonnetCompatibility } from "./internal/sonnet-compat-feature.ts";
@@ -82,6 +83,7 @@ export default function tokenUsage(pi: ExtensionAPI) {
   registerSonnetCompatibility(pi);
   registerCodexTodo(pi);
   registerStrictMessageQueue(pi);
+  registerBackgroundTaskQueue(pi);
   let total = emptyTotals();
   let turn = emptyTotals();
   let streaming = false;
