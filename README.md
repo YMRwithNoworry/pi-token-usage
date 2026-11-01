@@ -14,7 +14,7 @@
 
 ## Subagent 与 teammate 协作
 
-安装并启用 Pi 扩展 `pi-subagents` 后，模型可使用 `delegate` 将一个有界任务交给指定 agent，或使用 `team` 并行启动 2–4 个不同职责的 agent。Team workflow 最长运行 15 分钟；每名成员完成后，其最多 3000 字符的发现会作为 follow-up 发给仍在运行的队友。工具返回后台 run 回执，最终结果由 `pi-subagents` 的原生完成通知交还；agent 名称和执行能力仍由 `pi-subagents` 配置及 Pi 权限控制。
+安装并启用 Pi 扩展 `pi-subagents` 后，模型可使用 `delegate` 将一个有界任务交给指定 agent，或使用 `team` 并行启动 2–4 个不同职责的 agent。`delegate` 支持可选的 `model` 参数，为本次运行覆盖模型；`team` 的每个成员也可单独指定 `model`。建议使用 `provider/model`，例如 `openai-codex/gpt-5.6-luna`；不指定时沿用 pi-subagents 为该 agent 配置的模型。Team workflow 最长运行 15 分钟；每名成员完成后，其最多 3000 字符的发现会作为 follow-up 发给仍在运行的队友。工具返回后台 run 回执，最终结果由 `pi-subagents` 的原生完成通知交还；agent 名称和执行能力仍由 `pi-subagents` 配置及 Pi 权限控制。
 
 ```json
 {

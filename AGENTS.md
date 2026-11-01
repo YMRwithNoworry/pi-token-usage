@@ -1,12 +1,12 @@
 # Repository Guidelines
 
-A Codex-style Pi extension bundling real-time token usage, persistent Goals, task plans, `/init` guidance generation, Chinese working status, strict Tab messaging, Enter-submitted background tasks, Claude 5.5 Anthropic payload compatibility, and bounded subagent teams. `package.json` exposes the package to Pi's npm installer; there is no build step or external runtime dependency installation outside Pi's host APIs.
+A Codex-style Pi extension bundling real-time token usage, persistent Goals, task plans, `/init` guidance generation, Chinese working status, strict Tab messaging, Enter-submitted background tasks, Claude 5.5 Anthropic payload compatibility, and bounded subagent teams with per-run model overrides. `package.json` exposes the package to Pi's npm installer; there is no build step or external runtime dependency installation outside Pi's host APIs.
 
 ## Project Structure & Module Organization
 
 - `package.json` — npm metadata and the Pi manifest that loads only `token-usage.ts`.
 - `token-usage.ts` — the only entry point; default export `tokenUsage(pi)` registers every feature.
-- `internal/` — one module per feature, each exporting a single `registerX(pi)` function: `goal-feature.ts`, `init-feature.ts`, `todo-feature.ts`, `working-verb.ts`, `strict-message-queue.ts`, `background-task-queue.ts`, `subagent-team-feature.ts`, `sonnet-compat-feature.ts`.
+- `internal/` — one module per feature, each exporting a single `registerX(pi)` function: `goal-feature.ts`, `init-feature.ts`, `todo-feature.ts`, `working-verb.ts`, `strict-message-queue.ts`, `background-task-queue.ts`, `subagent-team-feature.ts` (including per-run model overrides), `sonnet-compat-feature.ts`.
 - `tests/` — flat `*.test.ts` files, one per internal module.
 - `README.md` — user-facing behavior and installation docs.
 

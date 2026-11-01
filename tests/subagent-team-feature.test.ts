@@ -54,7 +54,7 @@ const test = (name: string, fn: () => Promise<void> | void) => tests.push([name,
 const teamInput = {
   task: "Inspect the extension architecture",
   members: [
-    { agent: "scout", focus: "Map relevant modules and entry points" },
+    { agent: "scout", focus: "Map relevant modules and entry points", model: "openai-codex/gpt-5.6-luna" },
     { agent: "reviewer", focus: "Identify correctness and test risks" },
   ],
 };
@@ -82,6 +82,34 @@ test("delegate routes one task through the public subagent RPC", async () => {
   });
 });
 
+test("delegate forwards an optional per-run model override", async () => {
+  const harness = createHarness();
+  const result = await harness.tools.get("delegate").execute("call-1", {
+    agent: "scout",
+    task: "Map the extension entry points",
+    model: "openai-codex/gpt-5.6-luna",
+  }, undefined, undefined, harness.ctx);
+
+  assert.equal(result.isError, false);
+  assert.deepEqual(harness.requests[0]?.params, {
+    agent: "scout",
+    task: "Map the extension entry points",
+    model: "openai-codex/gpt-5.6-luna",
+  });
+});
+
+test("delegate rejects an empty model override", async () => {
+  const harness = createHarness();
+  const result = await harness.tools.get("delegate").execute("call-1", {
+    agent: "scout",
+    task: "Map modules",
+    model: "  ",
+  }, undefined, undefined, harness.ctx);
+
+  assert.equal(result.isError, true);
+  assert.equal(harness.requests.length, 0);
+});
+
 test("rejects calls when pi-subagents is unavailable or not present in tool context", async () => {
   const harness = createHarness(false);
   const result = await harness.tools.get("delegate").execute("call-1", { agent: "scout", task: "Map modules" }, undefined, undefined, harness.ctx);
@@ -106,8 +134,12 @@ test("team launches a timed workflow and relays an early member's findings", asy
   assert.match(script, /Inspect the extension architecture/u);
 
   const steers: Array<{ key: string; message: string; options: unknown }> = [];
+  const childCalls: Array<{ agent: string; model?: string }> = [];
   const runs = {
-    run: ({ agent }: { key: string; agent: string; task: string }) => Promise.resolve({ ok: true, output: `${agent} discovery` }),
+    run: ({ agent, model }: { key: string; agent: string; task: string; model?: string }) => {
+      childCalls.push({ agent, model });
+      return Promise.resolve({ ok: true, output: `${agent} discovery` });
+    },
     steer: (key: string, message: string, options: unknown) => {
       steers.push({ key, message, options });
       return Promise.resolve({ deliveryStatus: "queued" });
@@ -117,6 +149,10 @@ test("team launches a timed workflow and relays an early member's findings", asy
   const workflowResult = await executeScript(runs);
 
   assert.equal(workflowResult.length, 2);
+  assert.deepEqual(childCalls, [
+    { agent: "scout", model: "openai-codex/gpt-5.6-luna" },
+    { agent: "reviewer", model: undefined },
+  ]);
   assert.equal(steers.length, 1);
   assert.equal(steers[0].key, "member-2");
   assert.match(steers[0].message, /scout discovery/u);
