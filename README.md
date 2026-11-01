@@ -1,6 +1,6 @@
 # Codex Style
 
-这个 Pi 扩展提供实时 token 用量、任务 Todo 清单、`/init` 项目指南生成、持久化 Goal、中文工作状态、严格 Tab 消息队列、Enter steering 消息、Windows 上使用 Niubash 执行 Bash，以及基于 `pi-subagents` 的 subagent 和 teammate 协作。只加载 `token-usage.ts`，它会注册其余内部功能。
+这个 Pi 扩展提供任务 Todo 清单、`/init` 项目指南生成、持久化 Goal、中文工作提示、严格 Tab 消息队列、Enter steering 消息、Windows 上使用 Niubash 执行 Bash，以及基于 `pi-subagents` 的 subagent 和 teammate 协作。Token 和上下文用量由 Pi 原生状态栏显示；扩展不再添加重复的累计用量、缓存或费用状态。只加载 `token-usage.ts`，它会注册其余内部功能。
 
 ## Codex Todo 清单
 
@@ -22,17 +22,9 @@
 }
 ```
 
-## 实时 Token 用量
+## Token 和上下文用量
 
-在 TUI/RPC 状态栏显示当前会话用量：
-
-- `↑` 输入 tokens（发送到模型的上下文）
-- `↓` 输出 tokens（模型生成并返回的内容）
-- `cache R/W` 缓存读取/写入 tokens（provider 提供时显示）
-- 估算费用（provider 提供时显示）
-- 流式生成期间刷新，回合结束后显示当前分支累计值
-
-不同 provider 对流式中间 usage 的支持不同。中间用量不可用时会以 `~` 标出估算值；最终累计值使用回合结束后 provider 返回的 usage。
+使用 Pi 原生状态栏的 token 与上下文指标；扩展不重复显示累计 token、缓存用量或费用。
 
 ## 中文工作状态
 

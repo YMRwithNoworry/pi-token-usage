@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-A Codex-style Pi extension bundling real-time token usage, persistent Goals, task plans, `/init` guidance generation, Chinese working status, strict Tab messaging, Enter-submitted steering messages, Niubash-backed Bash on Windows, Claude 5.5 Anthropic payload compatibility, and bounded subagent teams with per-run model overrides. `package.json` exposes the package to Pi's npm installer; there is no build step or external runtime dependency installation outside Pi's host APIs.
+A Codex-style Pi extension bundling persistent Goals, task plans, `/init` guidance generation, Chinese working status, strict Tab messaging, Enter-submitted steering messages, Niubash-backed Bash on Windows, Claude 5.5 Anthropic payload compatibility, and bounded subagent teams with per-run model overrides. `package.json` exposes the package to Pi's npm installer; there is no build step or external runtime dependency installation outside Pi's host APIs.
 
 ## Project Structure & Module Organization
 

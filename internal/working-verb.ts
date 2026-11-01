@@ -4,7 +4,6 @@ import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-a
 
 const DEFAULT_VERBS_PATH = "D:\\Downloads\\claude-code-zh-cn-main\\verbs\\zh-CN.json";
 const FALLBACK_VERBS = ["思考中", "处理中", "计算中", "构建中", "校对中", "生成中"];
-const WORKING_STATUS_KEY = "working-verb";
 const ROTATION_INTERVAL_MS = 1600;
 
 type VerbFile = {
@@ -54,7 +53,6 @@ export function registerWorkingVerbs(pi: ExtensionAPI): void {
     if (!canRenderWorkingUI(ctx)) return;
     previousVerb = nextVerb(verbs, previousVerb);
     ctx.ui.setWorkingMessage(previousVerb);
-    ctx.ui.setStatus(WORKING_STATUS_KEY, ctx.ui.theme.fg("dim", previousVerb));
   };
 
   const stopRotation = (): void => {
@@ -79,7 +77,6 @@ export function registerWorkingVerbs(pi: ExtensionAPI): void {
     if (!canRenderWorkingUI(ctx)) return;
     ctx.ui.setWorkingMessage();
     ctx.ui.setWorkingIndicator();
-    ctx.ui.setStatus(WORKING_STATUS_KEY, undefined);
   };
 
   pi.on("session_start", async (_event, ctx) => {
@@ -107,7 +104,6 @@ export function registerWorkingVerbs(pi: ExtensionAPI): void {
   pi.on("session_before_compact", async (_event, ctx) => rotate(ctx));
   pi.on("agent_end", async (_event, ctx) => {
     stopRotation();
-    if (canRenderWorkingUI(ctx)) ctx.ui.setStatus(WORKING_STATUS_KEY, undefined);
   });
 
   pi.on("session_shutdown", async (_event, ctx) => restorePiWorkingUI(ctx));

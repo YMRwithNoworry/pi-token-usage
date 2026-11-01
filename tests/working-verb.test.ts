@@ -63,7 +63,7 @@ test("session_start loads verbs and hides the default spinner", async () => {
   const first = harness.workingMessages[0];
   assert.equal(typeof first, "string");
   assert.ok((first ?? "").length > 0);
-  assert.ok(harness.statuses[0] === first, "status line mirrors the working message");
+  assert.deepEqual(harness.statuses, [], "working verbs must not add a duplicate bottom status item");
 });
 
 test("turn_start and streaming events rotate the verb", async () => {
@@ -92,7 +92,7 @@ test("session_shutdown restores Pi's default working UI", async () => {
   await harness.emit("session_shutdown");
   assert.equal(harness.workingMessages.at(-1), undefined);
   assert.equal(harness.indicators.at(-1), undefined);
-  assert.equal(harness.statuses.at(-1), undefined);
+  assert.deepEqual(harness.statuses, [], "shutdown must not write a custom status item");
 });
 
 let failures = 0;
