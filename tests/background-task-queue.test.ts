@@ -1,5 +1,5 @@
 /**
- * Runtime checks for routing busy TUI submissions to Pi's follow-up queue.
+ * Runtime checks for routing busy TUI submissions through native steering.
  *
  * Run with: node --experimental-strip-types tests/background-task-queue.test.ts
  */
@@ -38,7 +38,7 @@ function createHarness() {
 const tests: Array<[string, () => Promise<void> | void]> = [];
 const test = (name: string, fn: () => Promise<void> | void) => tests.push([name, fn]);
 
-test("busy Enter messages become native follow-ups in submission order", () => {
+test("busy Enter messages are routed through native steering", () => {
   const harness = createHarness();
   const first = harness.input({ text: "先完成当前任务", source: "interactive", streamingBehavior: "steer" });
   const second = harness.input({ text: "再处理这个", source: "interactive", streamingBehavior: "steer" });
@@ -46,12 +46,12 @@ test("busy Enter messages become native follow-ups in submission order", () => {
   assert.deepEqual(first, { action: "handled" });
   assert.deepEqual(second, { action: "handled" });
   assert.deepEqual(harness.sent, [
-    { content: "先完成当前任务", options: { deliverAs: "followUp", expandPromptTemplates: true } },
-    { content: "再处理这个", options: { deliverAs: "followUp", expandPromptTemplates: true } },
+    { content: "先完成当前任务", options: { deliverAs: "steer", expandPromptTemplates: true } },
+    { content: "再处理这个", options: { deliverAs: "steer", expandPromptTemplates: true } },
   ]);
 });
 
-test("attached images are included in the queued follow-up", () => {
+test("attached images are included in the steering message", () => {
   const harness = createHarness();
   const image = { type: "image", data: "aW1hZ2U=", mimeType: "image/png" };
 

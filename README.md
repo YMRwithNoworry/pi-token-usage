@@ -1,6 +1,6 @@
 # Codex Style
 
-这个 Pi 扩展提供实时 token 用量、任务 Todo 清单、`/init` 项目指南生成、持久化 Goal、中文工作状态、严格 Tab 消息队列、Enter 后台任务，以及基于 `pi-subagents` 的 subagent 和 teammate 协作。只加载 `token-usage.ts`，它会注册其余内部功能。
+这个 Pi 扩展提供实时 token 用量、任务 Todo 清单、`/init` 项目指南生成、持久化 Goal、中文工作状态、严格 Tab 消息队列、Enter steering 消息，以及基于 `pi-subagents` 的 subagent 和 teammate 协作。只加载 `token-usage.ts`，它会注册其余内部功能。
 
 ## Codex Todo 清单
 
@@ -49,9 +49,9 @@
 
 文件读取失败或列表为空时使用内置中文状态作为 fallback。
 
-## 后台任务
+## Enter Steering 消息
 
-模型处理任务期间，在编辑器输入消息并按 Enter，会将普通消息排到当前任务完成之后处理，不会打断当前回合。包含图片的消息也会保留；连续提交的后台任务按提交顺序处理。斜杠命令仍按 Pi 原有规则处理。
+模型处理任务期间，在编辑器输入普通消息并按 Enter，会按 Pi 原生 steering 行为发送给当前任务处理，不会改排到当前任务结束后的 follow-up 队列。图片和提示模板展开会保留；斜杠命令与空消息继续按 Pi 原有规则处理。
 
 ## 严格 Tab 消息队列
 

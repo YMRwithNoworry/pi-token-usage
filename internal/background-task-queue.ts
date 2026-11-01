@@ -1,6 +1,6 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
-/** Route ordinary TUI messages submitted during a run to Pi's native follow-up queue. */
+/** Route ordinary TUI messages submitted during a run through Pi's native steering queue. */
 export function registerBackgroundTaskQueue(pi: ExtensionAPI): void {
   pi.on("input", (event, ctx) => {
     if (
@@ -16,7 +16,7 @@ export function registerBackgroundTaskQueue(pi: ExtensionAPI): void {
     const content = event.images?.length
       ? [{ type: "text" as const, text: event.text }, ...event.images]
       : event.text;
-    pi.sendUserMessage(content, { deliverAs: "followUp", expandPromptTemplates: true });
+    pi.sendUserMessage(content, { deliverAs: "steer", expandPromptTemplates: true });
     return { action: "handled" };
   });
 }
