@@ -1,7 +1,7 @@
 {
   "name": "codex-style",
-  "version": "1.0.6",
-  "description": "Codex-style Pi extension for token usage, persistent goals, task plans, Chinese working status, strict Tab queue, Enter-submitted background tasks, and Claude 5.5 compatibility",
+  "version": "1.0.7",
+  "description": "Codex-style Pi extension for token usage, goals, plans, Chinese working status, task queues, subagent teams, and Claude 5.5 compatibility",
   "type": "module",
   "repository": {
     "type": "git",
@@ -19,7 +19,9 @@
     "token-usage",
     "goal-management",
     "task-planning",
-    "message-queue"
+    "message-queue",
+    "subagents",
+    "team-orchestration"
   ],
   "files": [
     "token-usage.ts",

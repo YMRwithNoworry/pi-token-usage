@@ -11,6 +11,18 @@ const { default: tokenUsage } = await jiti.import("../token-usage.ts");
 const handlers = new Map<string, unknown[]>();
 const commands = new Map<string, unknown>();
 const tools = new Map<string, unknown>();
+const eventHandlers = new Map<string, Set<(data: unknown) => void>>();
+const events = {
+  on(name: string, handler: (data: unknown) => void) {
+    const listeners = eventHandlers.get(name) ?? new Set();
+    listeners.add(handler);
+    eventHandlers.set(name, listeners);
+    return () => listeners.delete(handler);
+  },
+  emit(name: string, data: unknown) {
+    for (const handler of eventHandlers.get(name) ?? []) handler(data);
+  },
+};
 const pi = {
   on(name: string, handler: unknown) {
     handlers.set(name, [...(handlers.get(name) ?? []), handler]);
@@ -22,6 +34,7 @@ const pi = {
     tools.set(tool.name, tool);
   },
   registerShortcut() {},
+  events,
 };
 
 tokenUsage(pi as any);
@@ -30,7 +43,7 @@ assert.equal(handlers.get("input")?.length, 1, "background message routing must 
 for (const command of ["goal", "init", "plan", "todo", "todos", "queue"]) {
   assert.equal(commands.has(command), true, `/${command} must register`);
 }
-for (const tool of ["create_goal", "get_goal", "update_goal", "update_plan"]) {
+for (const tool of ["create_goal", "get_goal", "update_goal", "update_plan", "delegate", "team"]) {
   assert.equal(tools.has(tool), true, `${tool} must register`);
 }
 console.log("ok - single entry point registers background input and public commands/tools once");

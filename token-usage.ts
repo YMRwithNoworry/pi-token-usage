@@ -5,6 +5,7 @@ import { registerPersistentGoals } from "./internal/goal-feature.ts";
 import { registerInitCommand } from "./internal/init-feature.ts";
 import { registerSonnetCompatibility } from "./internal/sonnet-compat-feature.ts";
 import { registerCodexTodo } from "./internal/todo-feature.ts";
+import { registerSubagentTeam } from "./internal/subagent-team-feature.ts";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import type { AssistantMessage, Usage } from "@earendil-works/pi-ai";
 
@@ -84,6 +85,7 @@ export default function tokenUsage(pi: ExtensionAPI) {
   registerCodexTodo(pi);
   registerStrictMessageQueue(pi);
   registerBackgroundTaskQueue(pi);
+  registerSubagentTeam(pi);
   let total = emptyTotals();
   let turn = emptyTotals();
   let streaming = false;
