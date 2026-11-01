@@ -1,6 +1,6 @@
 # Codex Style
 
-这个 Pi 扩展提供实时 token 用量、任务 Todo 清单、`/init` 项目指南生成、持久化 Goal、中文工作状态、严格 Tab 消息队列、Enter steering 消息，以及基于 `pi-subagents` 的 subagent 和 teammate 协作。只加载 `token-usage.ts`，它会注册其余内部功能。
+这个 Pi 扩展提供实时 token 用量、任务 Todo 清单、`/init` 项目指南生成、持久化 Goal、中文工作状态、严格 Tab 消息队列、Enter steering 消息、Windows 上使用 Niubash 执行 Bash，以及基于 `pi-subagents` 的 subagent 和 teammate 协作。只加载 `token-usage.ts`，它会注册其余内部功能。
 
 ## Codex Todo 清单
 
@@ -48,6 +48,10 @@
 ```
 
 文件读取失败或列表为空时使用内置中文状态作为 fallback。
+
+## Niubash Bash 工具
+
+Windows 上，扩展仅替换 Pi 的 `bash` 工具执行后端，命令通过 Niubash 的 `niu.exe -c` 运行；输入参数、输出截断、超时和取消仍使用 Pi 原生 Bash 工具实现。Pi 的 `read`、`edit`、`write`、`grep`、`find`、`ls`、PowerShell 等原生工具不受影响。扩展优先使用 `NIU_SHELL` 指向的可执行文件，其次在 `PATH` 中查找 `niu.exe`；找不到时 Bash 调用会返回明确错误。非 Windows 系统保留 Pi 原生 Bash。
 
 ## Enter Steering 消息
 
@@ -113,6 +117,7 @@ internal/init-feature.ts
 internal/todo-feature.ts
 internal/working-verb.ts
 internal/background-task-queue.ts
+internal/niubash-feature.ts
 internal/subagent-team-feature.ts
 internal/strict-message-queue.ts
 internal/sonnet-compat-feature.ts
@@ -137,6 +142,7 @@ node --experimental-strip-types tests/goal-command.test.ts
 node --experimental-strip-types tests/init-command.test.ts
 node --experimental-strip-types tests/todo-feature.test.ts
 node --experimental-strip-types tests/sonnet-compat.test.ts
+node --experimental-strip-types tests/niubash-feature.test.ts
 node --experimental-strip-types tests/subagent-team-feature.test.ts
 ```
 

@@ -46,4 +46,8 @@ for (const command of ["goal", "init", "plan", "todo", "todos", "queue"]) {
 for (const tool of ["create_goal", "get_goal", "update_goal", "update_plan", "delegate", "team"]) {
   assert.equal(tools.has(tool), true, `${tool} must register`);
 }
-console.log("ok - single entry point registers background input and public commands/tools once");
+assert.equal(tools.has("bash"), process.platform === "win32", "only Windows overrides Pi's native bash tool");
+for (const tool of ["read", "edit", "write", "grep", "find", "ls", "powershell"]) {
+  assert.equal(tools.has(tool), false, `${tool} must remain a native Pi tool`);
+}
+console.log("ok - single entry point registers each extension feature and only overrides native bash on Windows");
