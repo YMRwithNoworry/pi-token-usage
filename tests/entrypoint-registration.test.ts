@@ -43,8 +43,12 @@ assert.equal(handlers.get("input")?.length, 1, "background message routing must 
 for (const command of ["goal", "init", "plan", "todo", "todos", "queue"]) {
   assert.equal(commands.has(command), true, `/${command} must register`);
 }
-for (const tool of ["create_goal", "get_goal", "update_goal", "update_plan", "delegate", "team"]) {
+assert.equal(commands.has("subagent-model"), false, "the subagent model command must not register");
+for (const tool of ["create_goal", "get_goal", "update_goal", "update_plan"]) {
   assert.equal(tools.has(tool), true, `${tool} must register`);
+}
+for (const tool of ["delegate", "team"]) {
+  assert.equal(tools.has(tool), false, `${tool} must not register`);
 }
 assert.equal(tools.has("bash"), process.platform === "win32", "only Windows overrides Pi's native bash tool");
 for (const tool of ["read", "edit", "write", "grep", "find", "ls", "powershell"]) {

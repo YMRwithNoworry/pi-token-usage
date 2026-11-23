@@ -1,6 +1,6 @@
 # Codex Style
 
-这个 Pi 扩展提供任务 Todo 清单、`/init` 项目指南生成、持久化 Goal、中文工作提示、严格 Tab 消息队列、Enter steering 消息、Windows 上使用 Niubash 执行 Bash，以及基于 `pi-subagents` 的 subagent 和 teammate 协作。Token 和上下文用量由 Pi 原生状态栏显示；扩展不再添加重复的累计用量、缓存或费用状态。只加载 `token-usage.ts`，它会注册其余内部功能。
+这个 Pi 扩展提供任务 Todo 清单、`/init` 项目指南生成、持久化 Goal、中文工作提示、严格 Tab 消息队列、Enter steering 消息、以及 Windows 上使用 Niubash 执行 Bash。Token 和上下文用量由 Pi 原生状态栏显示；扩展不再添加重复的累计用量、缓存或费用状态。只加载 `token-usage.ts`，它会注册其余内部功能。
 
 ## Codex Todo 清单
 
@@ -11,16 +11,6 @@
 ## `/init` 项目指南
 
 运行 `/init` 会让 agent 检查当前项目并创建 200–400 词的 `AGENTS.md`，内容包括项目结构、开发与测试命令、代码风格和提交规范。提示明确要求先检查当前工作目录；如果 `AGENTS.md` 已存在，不得覆盖或修改。任务繁忙时，初始化请求会排在当前任务之后。
-
-## Subagent 与 teammate 协作
-
-安装并启用 Pi 扩展 `pi-subagents` 后，模型可使用 `delegate` 将一个有界任务交给指定 agent，或使用 `team` 并行启动 2–4 个不同职责的 agent。`delegate` 支持可选的 `model` 参数，为本次运行覆盖模型；`team` 的每个成员也可单独指定 `model`。建议使用 `provider/model`，例如 `openai-codex/gpt-5.6-luna`；不指定时沿用 pi-subagents 为该 agent 配置的模型。Team workflow 最长运行 15 分钟；每名成员完成后，其最多 3000 字符的发现会作为 follow-up 发给仍在运行的队友。工具返回后台 run 回执，最终结果由 `pi-subagents` 的原生完成通知交还；agent 名称和执行能力仍由 `pi-subagents` 配置及 Pi 权限控制。
-
-```json
-{
-  "packages": ["npm:pi-subagents", "npm:codex-style"]
-}
-```
 
 ## Token 和上下文用量
 
@@ -110,7 +100,6 @@ internal/todo-feature.ts
 internal/working-verb.ts
 internal/background-task-queue.ts
 internal/niubash-feature.ts
-internal/subagent-team-feature.ts
 internal/strict-message-queue.ts
 internal/sonnet-compat-feature.ts
 ```
@@ -135,6 +124,5 @@ node --experimental-strip-types tests/init-command.test.ts
 node --experimental-strip-types tests/todo-feature.test.ts
 node --experimental-strip-types tests/sonnet-compat.test.ts
 node --experimental-strip-types tests/niubash-feature.test.ts
-node --experimental-strip-types tests/subagent-team-feature.test.ts
 ```
 

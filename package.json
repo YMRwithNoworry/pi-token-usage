@@ -1,7 +1,7 @@
 {
   "name": "codex-style",
   "version": "1.1.1",
-  "description": "Codex-style Pi extension for goals, plans, Chinese working status, task queues, Niubash-backed Bash on Windows, subagent teams with per-run model overrides, and Claude 5.5 compatibility",
+  "description": "Codex-style Pi extension for goals, plans, Chinese working status, task queues, Niubash-backed Bash on Windows, and Claude 5.5 compatibility",
   "type": "module",
   "repository": {
     "type": "git",
@@ -20,8 +20,6 @@
     "goal-management",
     "task-planning",
     "message-queue",
-    "subagents",
-    "team-orchestration",
     "niubash"
   ],
   "files": [
