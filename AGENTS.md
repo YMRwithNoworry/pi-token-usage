@@ -1,8 +1,9 @@
 # Repository Guidelines
 
-`codex-style` provides only a Niubash-backed `bash` tool on Windows and a strict Tab message queue in Pi's TUI. `token-usage.ts` is the only extension entry point. There is no build step.
+`codex-style` provides only a Niubash-backed `bash` tool on Windows and a strict Tab message queue for Pi and Oh My Pi. There is no build step.
 
-- `internal/niubash-feature.ts` replaces the Windows Bash backend without changing other tools.
+- `token-usage.ts` is the Pi entry point; `omp/index.ts` is the Oh My Pi entry point.
+- `internal/niubash-path.ts` resolves Niubash for both hosts. Keep host-specific Bash and TUI APIs separate.
 - `internal/strict-message-queue.ts` manages Tab input and releases one item after each fully settled run.
 - `tests/` covers both features and the entry point. `README.md` documents usage and installation.
 
