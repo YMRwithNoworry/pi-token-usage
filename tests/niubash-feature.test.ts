@@ -1,40 +1,71 @@
-/** Verify only the native bash tool is routed through Niubash on Windows. */
 import assert from "node:assert/strict";
-import { createRequire } from "node:module";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import test from "node:test";
+import "./pi-host.ts";
 
-const require = createRequire(import.meta.url);
-const JITI_PATH = "C:/Users/Administrator/.pi/agent/install/releases/1.4.0/node_modules/jiti/lib/jiti.cjs";
-const { createJiti } = require(JITI_PATH);
-const jiti = createJiti(import.meta.url, { moduleCache: false });
-const { registerNiubashBash } = await jiti.import("../internal/niubash-feature.ts");
+const { findNiubashPath, registerNiubash } = await import("../internal/niubash-feature.ts");
 
-const tools = new Map<string, any>();
-registerNiubashBash({
-  registerTool(tool: { name: string }) {
-    tools.set(tool.name, tool);
-  },
-} as any);
+type Tool = {
+  name: string;
+  description: string;
+  execute: (id: string, params: { command: string; timeout: number }) => Promise<{
+    content: Array<{ text?: string }>;
+    isError?: boolean;
+  }>;
+};
 
-if (process.platform !== "win32") {
-  assert.equal(tools.size, 0, "non-Windows platforms must retain Pi's native bash tool");
-  console.log("ok - non-Windows platforms keep the native bash tool");
-} else {
-  assert.deepEqual([...tools.keys()], ["bash"]);
-  for (const name of ["read", "edit", "write", "grep", "find", "ls", "powershell"]) {
-    assert.equal(tools.has(name), false, `${name} must remain a native Pi tool`);
-  }
-
-  const bashTool = tools.get("bash");
-  assert.match(bashTool.description, /Niubash/u);
-  const result = await bashTool.execute(
-    "niubash-smoke",
-    { command: "printf '%s' \"$NIU_SHELL\"" },
-    undefined,
-    undefined,
-    undefined,
-  );
-
-  assert.equal(result.isError, undefined);
-  assert.match(result.content[0]?.text ?? "", /niu\.exe/iu);
-  console.log("ok - bash runs through Niubash while other native tool registrations are untouched");
+function registeredTools(platform: string): Tool[] {
+  const tools: Tool[] = [];
+  const pi = { registerTool(tool: Tool): void { tools.push(tool); } };
+  registerNiubash(pi as unknown as Parameters<typeof registerNiubash>[0], platform);
+  return tools;
 }
+
+test("only Windows registers a Niubash-backed bash tool", () => {
+  assert.deepEqual(registeredTools("linux"), []);
+  const tools = registeredTools("win32");
+  assert.deepEqual(tools.map(({ name }) => name), ["bash"]);
+  assert.match(tools[0].description, /Niubash/u);
+});
+
+test("discovers Niubash in order and rejects other shells", () => {
+  const root = mkdtempSync(join(tmpdir(), "codex-style-niu-"));
+  try {
+    const inherited = join(root, "inherited", "niu.exe");
+    const override = join(root, "override", "niu.exe");
+    const standard = join(root, "Programs", "Niubash", "niu.exe");
+    const onPath = join(root, "bin", "niu.exe");
+    for (const path of [inherited, override, standard, onPath]) {
+      mkdirSync(dirname(path), { recursive: true });
+      writeFileSync(path, "");
+    }
+    writeFileSync(join(root, "bash.exe"), "");
+    const env = { Path: join(root, "bin"), LOCALAPPDATA: root, NIUBASH_PATH: override };
+    assert.equal(findNiubashPath({ ...env, NIU_SHELL: `"${inherited}"` }), inherited);
+    assert.equal(findNiubashPath(env), override);
+    assert.equal(findNiubashPath({ ...env, NIUBASH_PATH: root }), standard);
+    assert.equal(findNiubashPath({ Path: env.Path }), onPath);
+    assert.throws(() => findNiubashPath({ PATH: root }), /Niubash was not found/u);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+let hasNiubash = false;
+if (process.platform === "win32") {
+  try {
+    findNiubashPath();
+    hasNiubash = true;
+  } catch {
+    // The integration check requires a local Niubash installation.
+  }
+}
+
+test("the real Pi Bash tool executes through Niubash", { skip: !hasNiubash }, async () => {
+  const [bash] = registeredTools("win32");
+  const result = await bash.execute("smoke", { command: 'printf "%s" "${NIU_SHELL##*[\\\\/]}"', timeout: 5 });
+  assert.ok(!result.isError);
+  assert.equal(result.content[0]?.text?.trim().toLowerCase(), "niu.exe");
+});

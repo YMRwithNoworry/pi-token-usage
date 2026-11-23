@@ -1,18 +1,7 @@
-/**
- * Runtime checks for the strict Tab message queue.
- *
- * Run with: node --experimental-strip-types tests/strict-message-queue.test.ts
- * (jiti resolves the extension's TypeScript imports exactly as Pi loads them)
- */
 import assert from "node:assert/strict";
-import { createRequire } from "node:module";
+import "./pi-host.ts";
 
-const require = createRequire(import.meta.url);
-const JITI_PATH = "C:/Users/Administrator/.pi/agent/install/releases/1.4.0/node_modules/jiti/lib/jiti.cjs";
-const { createJiti } = require(JITI_PATH);
-
-const jiti = createJiti(import.meta.url, { moduleCache: false });
-const { registerStrictMessageQueue } = await jiti.import("../internal/strict-message-queue.ts");
+const { registerStrictMessageQueue } = await import("../internal/strict-message-queue.ts");
 
 type Handler = (event: any, ctx: any) => unknown;
 
@@ -166,17 +155,17 @@ test("Tab on a slash command keeps Pi autocomplete behavior", async () => {
   const harness = createHarness();
   await harness.emit("session_start");
   await harness.busy();
-  harness.setEditorText("  /goal st");
+  harness.setEditorText("  /queue cl");
   assert.equal(harness.pressTab(), undefined);
-  assert.equal(harness.getEditorText(), "  /goal st");
+  assert.equal(harness.getEditorText(), "  /queue cl");
   assert.equal(harness.sent.length, 0);
 });
 
 test("Tab still sends ordinary text that mentions a slash command", async () => {
   const harness = createHarness();
   await harness.emit("session_start");
-  harness.enqueue("请执行 /goal status");
-  assert.deepEqual(harness.sent, ["请执行 /goal status"]);
+  harness.enqueue("请执行 /queue clear");
+  assert.deepEqual(harness.sent, ["请执行 /queue clear"]);
 });
 
 test("Tab on an empty editor does nothing", async () => {
